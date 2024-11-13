@@ -1,0 +1,84 @@
+---
+#  - name: Add Docker GPG Key (Ubuntu)
+#    apt_key:
+#      url: https://download.docker.com/linux/ubuntu/gpg
+#      state: present
+#    when: ansible_distribution == "Ubuntu"
+#
+#  - name: Add Docker to APT repository (Ubuntu)
+#    apt_repository:
+#      repo: "deb https://download.docker.com/linux/ubuntu focal stable"
+#      state: present
+#    when: ansible_distribution == "Ubuntu"
+#
+#  - name: Install Docker Pre-requisites (Ubuntu)
+#    apt:
+#      name:
+#        - apt-transport-https
+#        - ca-certificates
+#        - curl
+#        - software-properties-common
+#        - python3-pip
+#        - virtualenv
+#        - python3-setuptools
+#      state: latest
+#    when: ansible_distribution == "Ubuntu"
+#
+#  - name: Install Docker
+#    package:
+#      name: docker-ce
+#      state: latest
+#
+#  - name: Start Docker Service
+#    service:
+#      name: docker
+#      state: started
+#      enabled: yes
+
+- name: Install Apache
+    apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+- name: Ensure Apache is running
+    service:
+        name: apache2
+        state: started
+        enabled: true
+
+- name: Install MariaDB
+    apt:
+        name: mariadb-server
+        state: present
+        update_cache: yes
+
+- name: Ensure MariaDB is running
+    service:
+        name: mariadb
+        state: started
+        enabled: true
+
+- name: Set root user password to blank (optional)
+    mysql_user:
+        name: root
+        password: ""
+        login_user: root
+        login_password: ""
+        state: present
+
+- name: Create a database
+    mysql_db:
+        name: my_database
+        state: present
+        login_user: root
+        login_password: ""  # No password
+
+- name: Create a MySQL user without a password
+    mysql_user:
+        name: my_user
+        password: ""  # No password
+        priv: '*.*:ALL'
+        state: present
+        login_user: root
+        login_password: ""  # No password
